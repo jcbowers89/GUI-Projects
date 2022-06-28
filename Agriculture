@@ -1,0 +1,75 @@
+### Created by: Jason Bowers
+### Created on: 26 Feb 2020
+### Using Slope and eleveation data the script will identify possible coffee plantation sites on the Hawaiian island of Oahu.
+##
+import arcpy
+from arcpy import env
+from arcpy.sa import *
+arcpy.CheckOutExtension("Spatial")
+env.workspace = arcpy.GetParameterAsText(0)
+env.overwriteOutput = True
+
+### Task 2
+##rasters = arcpy.ListRasters("DEM*")
+##infeat = ("Elevation_Good_Poly", "Slope_Good_Poly")
+##
+### Task 3
+##raster_inputs = ";".join(rasters)
+##
+### Task 4
+##arcpy.MosaicToNewRaster_management(raster_inputs, env.workspace, 'mosaic_raster', "", '16_BIT_UNSIGNED', '', 1)
+##
+### Task 5
+##outSlope = Slope("mosaic_raster", "DEGREE")
+##outSlope.save("slope")
+
+# Lesson 3 Task 7
+min_elev = arcpy.GetParameterAsText(1)
+max_slp = arcpy.GetParameterAsText(2)
+infeat = ("Elevation_Good_Poly", "Slope_Good_Poly")
+
+# Task 6 Reclass Elevation
+outReclass1 = Reclassify("mosaic_raster", "Value", RemapRange([[min_elev, 1232, 1]]), "NODATA")
+outReclass1.save("RC_Elevation_Good")
+
+# Task 7 Reclass Slope
+outReclass2 = Reclassify("slope", "Value", RemapRange([[0, max_slp, 1]]), "NODATA")
+outReclass2.save("RC_Slope_Good")
+
+# Task 8
+# Convert Elevation to polygon
+arcpy.RasterToPolygon_conversion("RC_Elevation_Good", "Elevation_Good_Poly", "NO_SIMPLIFY")
+
+# Convert Slope to polygon
+arcpy.RasterToPolygon_conversion("RC_Slope_Good", "Slope_Good_Poly", "NO_SIMPLIFY")
+
+# Task 9 Overlay elevation and slope
+arcpy.Intersect_analysis(infeat, "Possible_Sites", "ALL", "", "")
+
+# Lesson 3
+# Task 1
+arcpy.MultipartToSinglepart_management("Possible_Sites", "Single_Sites")
+
+# Task 2
+arcpy.Select_analysis("Single_Sites", "Final_Sites_" + str(min_elev) + "_" + str(max_slp), "Shape_Area >2500")
+
+# Task 3
+arcpy.MakeFeatureLayer_management("Dtl_Cities", "Cities_Layer")
+
+# Task 4
+arcpy.SelectLayerByLocation_management("Cities_Layer", 'WITHIN_A_DISTANCE', "Final_Sites_" + str(min_elev) + "_" + str(max_slp), '3 Kilometers')
+
+# Task 5
+arcpy.CopyFeatures_management("Cities_Layer", "Nearby_Cities")
+
+# Task 6
+num = arcpy.GetCount_management("Nearby_Cities")
+arcpy.AddMessage("There are () cities identified".format(num))
+arcpy.AddMessage("Nearby cities are: ")
+with arcpy.da.SearchCursor("Nearby_Cities", ["NAME"]) as cursor:
+    for row in cursor:
+        arcpy.AddMessage(row[0])
+print "STOP"
+print "completed move on to Task 8"
+
+arcpy.AddMessage("Go home!")
