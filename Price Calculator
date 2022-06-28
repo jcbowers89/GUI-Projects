@@ -1,0 +1,146 @@
+Public Class Form1
+
+    ' Class-level declarations
+    Const decTAX_RATE As Decimal = 0.06D
+    Const decOIL_CHANGE As Decimal = 26D
+    Const decLUBE_JOB As Decimal = 18D
+    Const decRADIATOR_FLUSH As Decimal = 30D
+    Const decTRANS_FLUSH As Decimal = 80D
+    Const decINSPECTION As Decimal = 15D
+    Const decREPLACE_MUFFLER As Decimal = 100D
+    Const decTIRE_ROTATION As Decimal = 20D
+    Dim decParts As Decimal
+    Dim decLabor As Decimal
+
+
+    Private Sub btnCalculate_Click(sender As Object, e As EventArgs) Handles btnCalculate.Click
+        ' This procedure calculates the total of an order.
+        Dim decServiceLabor As Decimal
+        Dim decTax As Decimal
+        Dim decTotal As Decimal
+
+        If Not Decimal.TryParse(txtParts.Text, decParts) Then
+            MessageBox.Show("The cost of parts must be a numeric value.")
+        ElseIf decParts < 0 Then
+            MessageBox.Show("The cost of parts must be a positive number.")
+        End If
+
+        If Not Decimal.TryParse(txtLabor.Text, decLabor) Then
+            MessageBox.Show("The cost of labor must be a numeric value.")
+        ElseIf decLabor < 0 Then
+            MessageBox.Show("The cost of labor must be a positive number.")
+        End If
+
+        decServiceLabor = OilLubeCharges() + FlushCharges() + MiscCharges() + decLabor
+        decTax = TaxCharges(decParts)
+        decTotal = decServiceLabor + decParts + decTax
+
+        lblServiceLabor.Text = decServiceLabor.ToString("c")
+        lblParts.Text = decParts.ToString("c")
+        lblTax.Text = decTax.ToString("c")
+        lblTotal.Text = decTotal.ToString("c")
+    End Sub
+
+    Private Sub btnClear_Click(sender As Object, e As EventArgs) Handles btnClear.Click
+        ' This procedure clears the control values.
+        ClearOilLube()
+        ClearFlushes()
+        ClearMisc()
+        ClearOther()
+        ClearFees()
+    End Sub
+
+    Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
+        ' Close the form.
+        Me.Close()
+    End Sub
+
+    Function OilLubeCharges() As Decimal
+        ' This function returns the cost of the oil and lube services.
+        Dim decCostOfOilLube As Decimal = 0D
+
+        If chkOilChange.Checked = True Then
+            decCostOfOilLube += decOIL_CHANGE
+        End If
+
+        If chkLubeJob.Checked = True Then
+            decCostOfOilLube += decLUBE_JOB
+        End If
+
+        Return decCostOfOilLube
+    End Function
+
+    Function FlushCharges() As Decimal
+        ' This function returns the cost of flush services.
+        Dim decCostOfFlush As Decimal = 0D
+
+        If chkRadFlush.Checked = True Then
+            decCostOfFlush += decRADIATOR_FLUSH
+        End If
+
+        If chkTranFlush.Checked = True Then
+            decCostOfFlush += decTRANS_FLUSH
+        End If
+
+        Return decCostOfFlush
+    End Function
+
+    Function MiscCharges() As Decimal
+        ' This function returns the cost of misc services.
+        Dim decCostOfMisc As Decimal = 0D
+
+        If chkInspection.Checked = True Then
+            decCostOfMisc += decINSPECTION
+        End If
+
+        If chkMuffler.Checked = True Then
+            decCostOfMisc += decREPLACE_MUFFLER
+        End If
+
+        If chkTireRotation.Checked = True Then
+            decCostOfMisc += decTIRE_ROTATION
+        End If
+
+        Return decCostOfMisc
+    End Function
+
+    Function TaxCharges(ByVal decAmount As Decimal) As Decimal
+        ' This function receives the sale amount and
+        ' returns the amount of sales tax.
+        Return decAmount * decTAX_RATE
+    End Function
+
+    Sub ClearOilLube()
+        ' This procedure resets the oil and lube section.
+        chkOilChange.Checked = False
+        chkLubeJob.Checked = False
+    End Sub
+
+    Sub ClearFlushes()
+        ' This procedure resets the flush section.
+        chkRadFlush.Checked = False
+        chkTranFlush.Checked = False
+    End Sub
+
+    Sub ClearMisc()
+        ' This procedure resets the misc section.
+        chkInspection.Checked = False
+        chkMuffler.Checked = False
+        chkTireRotation.Checked = False
+    End Sub
+
+    Sub ClearOther()
+        ' This procedure resets the text boxes.
+        txtParts.Clear()
+        txtLabor.Clear()
+    End Sub
+
+    Sub ClearFees()
+        ' This procedure resets the labels.
+        lblServiceLabor.Text = String.Empty
+        lblParts.Text = String.Empty
+        lblTax.Text = String.Empty
+        lblTotal.Text = String.Empty
+    End Sub
+
+End Class
