@@ -1,0 +1,182 @@
+Public Class Bowers
+
+    ' Class-level declarations
+    Dim decJanuary As Decimal
+    Dim decFebruary As Decimal
+    Dim decMarch As Decimal
+    Dim decApril As Decimal
+    Dim decMay As Decimal
+    Dim decJune As Decimal
+    Dim decJuly As Decimal
+    Dim decAugust As Decimal
+    Dim decSeptember As Decimal
+    Dim decOctober As Decimal
+    Dim decNovember As Decimal
+    Dim decDecember As Decimal
+
+    Private Sub btnCalculate_Click(sender As Object, e As EventArgs) Handles btnCalculate.Click
+        ' This procedure calculates the average and total rainfall.
+        Dim decTotal As Decimal
+        Dim decAverage As Decimal
+
+        decTotal = CalcTotalRainfall()
+        decAverage = decTotal / 12
+
+        lblTotalRainfall.Text = decTotal.ToString("n2")
+        lblAverageRainfall.Text = decAverage.ToString("n2")
+    End Sub
+
+    Private Sub btnClear_Click(sender As Object, e As EventArgs) Handles btnClear.Click
+        ' This procedure clears the text boxes and assigns focus to txtJanuary.
+        txtJanuary.Clear()
+        txtFebruary.Clear()
+        txtMarch.Clear()
+        txtApril.Clear()
+        txtMay.Clear()
+        txtJune.Clear()
+        txtJuly.Clear()
+        txtAugust.Clear()
+        txtSeptember.Clear()
+        txtOctober.Clear()
+        txtNovember.Clear()
+        txtDecember.Clear()
+
+        txtJanuary.Focus()
+
+        ' This procedure clears the labels.
+        lblTotalRainfall.Text = String.Empty
+        lblAverageRainfall.Text = String.Empty
+    End Sub
+
+    Private Sub btnExit_Click(sender As Object, e As EventArgs) Handles btnExit.Click
+        ' Close the form.
+        Me.Close()
+    End Sub
+
+    Function CalcTotalRainfall() As Decimal
+        ' This function return the total rainfall.
+        Dim decTotalRainfall As Decimal = 0
+
+        If Not Decimal.TryParse(txtJanuary.Text, decJanuary) Then
+            MessageBox.Show("The amount of rainfall for January must be a numeric value.")
+            txtJanuary.Focus()
+        ElseIf decJanuary < 0 Then
+            MessageBox.Show("The amount of rainfall for January must be a positive number.")
+            txtJanuary.Focus()
+        ElseIf decJanuary > 0 Then
+            decTotalRainfall += decJanuary
+        End If
+
+        If Not Decimal.TryParse(txtFebruary.Text, decFebruary) Then
+            MessageBox.Show("The amount of rainfall for February must be a numeric value.")
+            txtFebruary.Focus()
+        ElseIf decFebruary < 0 Then
+            MessageBox.Show("The amount of rainfall for February must be a positive number.")
+            txtFebruary.Focus()
+        ElseIf decFebruary > 0 Then
+            decTotalRainfall += decFebruary
+        End If
+
+        If Not Decimal.TryParse(txtMarch.Text, decMarch) Then
+            MessageBox.Show("The amount of rainfall for March must be a numeric value.")
+            txtMarch.Focus()
+        ElseIf decMarch < 0 Then
+            MessageBox.Show("The amount of rainfall for March must be a positive number.")
+            txtMarch.Focus()
+        ElseIf decMarch > 0 Then
+            decTotalRainfall += decMarch
+        End If
+
+        If Not Decimal.TryParse(txtApril.Text, decApril) Then
+            MessageBox.Show("The amount of rainfall for April must be a numeric value.")
+            txtApril.Focus()
+        ElseIf decApril < 0 Then
+            MessageBox.Show("The amount of rainfall for April must be a positive number.")
+            txtApril.Focus()
+        ElseIf decApril > 0 Then
+            decTotalRainfall += decApril
+        End If
+
+        If Not Decimal.TryParse(txtMay.Text, decMay) Then
+            MessageBox.Show("The amount of rainfall for May must be a numeric value.")
+            txtMay.Focus()
+        ElseIf decMay < 0 Then
+            MessageBox.Show("The amount of rainfall for May must be a positive number.")
+            txtMay.Focus()
+        ElseIf decMay > 0 Then
+            decTotalRainfall += decMay
+        End If
+
+        If Not Decimal.TryParse(txtJune.Text, decJune) Then
+            MessageBox.Show("The amount of rainfall for June must be a numeric value.")
+            txtJune.Focus()
+        ElseIf decJune < 0 Then
+            MessageBox.Show("The amount of rainfall for June must be a positive number.")
+            txtJune.Focus()
+        ElseIf decJune > 0 Then
+            decTotalRainfall += decJune
+        End If
+
+        If Not Decimal.TryParse(txtJuly.Text, decJuly) Then
+            MessageBox.Show("The amount of rainfall for July must be a numeric value.")
+            txtJuly.Focus()
+        ElseIf decJuly < 0 Then
+            MessageBox.Show("The amount of rainfall for July must be a positive number.")
+            txtJuly.Focus()
+        ElseIf decJuly > 0 Then
+            decTotalRainfall += decJuly
+        End If
+
+        If Not Decimal.TryParse(txtAugust.Text, decAugust) Then
+            MessageBox.Show("The amount of rainfall for August must be a numeric value.")
+            txtAugust.Focus()
+        ElseIf decAugust < 0 Then
+            MessageBox.Show("The amount of rainfall for August must be a positive number.")
+            txtAugust.Focus()
+        ElseIf decAugust > 0 Then
+            decTotalRainfall += decAugust
+        End If
+
+        If Not Decimal.TryParse(txtSeptember.Text, decSeptember) Then
+            MessageBox.Show("The amount of rainfall for September must be a numeric value.")
+            txtSeptember.Focus()
+        ElseIf decSeptember < 0 Then
+            MessageBox.Show("The amount of rainfall for September must be a positive number.")
+            txtSeptember.Focus()
+        ElseIf decSeptember > 0 Then
+            decTotalRainfall += decSeptember
+        End If
+
+        If Not Decimal.TryParse(txtOctober.Text, decOctober) Then
+            MessageBox.Show("The amount of rainfall for October must be a numeric value.")
+            txtOctober.Focus()
+        ElseIf decOctober < 0 Then
+            MessageBox.Show("The amount of rainfall for October must be a positive number.")
+            txtOctober.Focus()
+        ElseIf decOctober > 0 Then
+            decTotalRainfall += decOctober
+        End If
+
+        If Not Decimal.TryParse(txtNovember.Text, decNovember) Then
+            MessageBox.Show("The amount of rainfall for November must be a numeric value.")
+            txtNovember.Focus()
+        ElseIf decNovember < 0 Then
+            MessageBox.Show("The amount of rainfall for November must be a positive number.")
+            txtNovember.Focus()
+        ElseIf decNovember > 0 Then
+            decTotalRainfall += decNovember
+        End If
+
+        If Not Decimal.TryParse(txtDecember.Text, decDecember) Then
+            MessageBox.Show("The amount of rainfall for December must be a numeric value.")
+            txtDecember.Focus()
+        ElseIf decDecember < 0 Then
+            MessageBox.Show("The amount of rainfall for December must be a positive number.")
+            txtDecember.Focus()
+        ElseIf decDecember > 0 Then
+            decTotalRainfall += decDecember
+        End If
+
+        Return decTotalRainfall
+    End Function
+End Class
