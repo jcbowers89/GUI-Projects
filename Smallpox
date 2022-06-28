@@ -1,0 +1,90 @@
+# Smallpox Outbreak
+# Created by: Jason Bowers
+# Created on: 28 Feb 2020
+
+# Import arcpy site package, env class, and all
+# functions from the Spatial Analyst module
+import arcpy
+from arcpy import env
+from arcpy.sa import *
+
+# Retrieve Spatial Analyst extension
+arcpy.CheckOutExtension("Spatial")
+
+# Set environments
+env.workspace = r"C:\Users\Instructor\Desktop\GIS4411_Student\GIS4411\Capstone\Smallpox.gdb"
+env.overwriteOutput = True
+
+# Variables
+cbsa = "cbsa"
+cnty = "counties"
+hos = "hospitals"
+keep_list = ["OBJECTID", "Shape", "COUNTY", "Shape_Length", "Shape_Area", "NAME", "TransRate", "Gen_1", "Gen_2", "Gen_3", "Gen_4"]
+delete_list = []
+
+# Task 1
+arcpy.Select_analysis(cbsa, "selected_cbsa", "NAME = 'New York-Northern New Jersey-Long Island, NY-NJ-PA'")
+arcpy.SpatialJoin_analysis(cnty, "selected_cbsa", "selected_counties", "JOIN_ONE_TO_ONE", "KEEP_COMMON", "", "HAVE_THEIR_CENTER_IN")
+arcpy.Select_analysis(hos, "selected_hospitals", "TYPE_DESC = 'General medical and surgical'")
+arcpy.SpatialJoin_analysis("selected_counties", "selected_hospitals", "occurrence", "JOIN_ONE_TO_ONE", "KEEP_COMMON", "", "INTERSECT")
+
+# Task 2
+arcpy.AddField_management("occurrence", "Pop_Dens", "DOUBLE")
+arcpy.AddField_management("occurrence", "Case_Dens", "DOUBLE")
+arcpy.AddField_management("occurrence", "Case_Pop", "DOUBLE")
+arcpy.AddField_management("occurrence", "TransRate", "DOUBLE")
+
+arcpy.CalculateField_management("occurrence", "Pop_Dens", "!POP2004! / !SQMI!", "PYTHON")
+arcpy.CalculateField_management("occurrence", "Case_Dens", "!JOIN_COUNT_1! / !SQMI!", "PYTHON")
+arcpy.CalculateField_management("occurrence", "Case_Pop", "!Case_Dens! / !Pop_Dens!", "PYTHON")
+arcpy.CalculateField_management("occurrence", "TransRate", "!Pop_Dens! / 2000.0", "PYTHON")
+
+counter = 1
+while counter < 5:
+    arcpy.AddField_management("occurrence", "Gen_" + str(counter), "DOUBLE")
+    counter += 1
+
+arcpy.CalculateField_management("occurrence", "Gen_1", "!POP2004! * !Case_Pop!", "PYTHON")
+arcpy.CalculateField_management("occurrence", "Gen_2", "!Gen_1! * !TransRate!", "PYTHON")
+arcpy.CalculateField_management("occurrence", "Gen_3", "!Gen_2! * !TransRate!", "PYTHON")
+arcpy.CalculateField_management("occurrence", "Gen_4", "!Gen_3! * !TransRate!", "PYTHON")
+
+arcpy.Copy_management("occurrence", "smallpox", "FeatureClass")
+
+fields_list = arcpy.ListFields("smallpox")
+for field in fields_list:
+    if field.name not in keep_list:
+        delete_list.append(field.name)
+arcpy.DeleteField_management("smallpox", delete_list)
+
+counter = 1
+while counter < 5:
+    arcpy.AddField_management("smallpox", "Death_" + str(counter), "DOUBLE")
+    counter += 1
+
+arcpy.AddField_management("smallpox", "DeathTotal", "LONG")
+
+arcpy.CalculateField_management("smallpox", "Death_1", "!Gen_1! * 0.30", "PYTHON")
+arcpy.CalculateField_management("smallpox", "Death_2", "!Gen_2! * 0.30", "PYTHON")
+arcpy.CalculateField_management("smallpox", "Death_3", "!Gen_3! * 0.30", "PYTHON")
+arcpy.CalculateField_management("smallpox", "Death_4", "!Gen_4! * 0.30", "PYTHON")
+arcpy.CalculateField_management("smallpox", "DeathTotal", "!Death_1! + !Death_2! + !Death_3! + !Death_4!", "PYTHON")
+
+# Task 3
+try:
+    arcpy.PolygonToRaster_conversion("smallpox", "DeathTotal", "Death_Raster", "", "", 0.001)  
+    print "The smallpox feature class has been converted to a raster dataset."
+except:
+    print "Geoprocessing tool error:"
+    print arcpy.GetMessage(2)
+
+outReclass1 = Reclassify("Death_Raster", "Value", RemapRange([[5000, 200000, 1], [100, 5000, 2], [0, 100, 3]]), "NODATA")
+outReclass1.save("Raster_Recl")
+
+Total = 0
+rows = arcpy.da.SearchCursor("smallpox", ["DeathTotal"])
+for row in rows:
+    Total += row[0]
+del row
+del rows
+print "The total smallpox deaths are: " + str(Total)
